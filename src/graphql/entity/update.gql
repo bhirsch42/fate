@@ -1,0 +1,7 @@
+#import "./fragment.gql"
+
+mutation updateEntity ($id: ID!, $input: EntityInput!) {
+  updateEntity (id: $id, input: $input) {
+    ...Entity
+  }
+}

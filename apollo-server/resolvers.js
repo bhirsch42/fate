@@ -12,9 +12,9 @@ export default {
 
   Query: {
     hello: (root, { name }) => `Hello ${name || 'World'}!`,
+    entities: (root, args, { db }) => db.get('entities').value(),
     messages: (root, args, { db }) => db.get('messages').value(),
     uploads: (root, args, { db }) => db.get('uploads').value(),
-
   },
 
   Mutation: {
@@ -23,6 +23,30 @@ export default {
       context.pubsub.publish('hey', { mySub: message })
       return message
     },
+
+    createEntity(root, { input }, { pubsub, db }) {
+      const entity = {
+        id: shortid.generate(),
+        name: input.name,
+        type: input.type,
+      }
+
+      db.get('entities')
+        .push(entity)
+        .last()
+        .write()
+
+      pubsub.publish('entities', { entityCreated: entity })
+
+      return entity
+    },
+
+    updateEntity(root, { id, input }, { pubsub, db }) {
+      let entity = db.get('entities').find({ id });
+      entity.assign(input).write();
+      return entity.value();
+    },
+
     addMessage: (root, { input }, { pubsub, db }) => {
       const message = {
         id: shortid.generate(),
@@ -46,6 +70,10 @@ export default {
   },
 
   Subscription: {
+    entityCreated: {
+      subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('entities'),
+    },
+
     mySub: {
       subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('hey'),
     },

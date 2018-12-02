@@ -2,6 +2,30 @@
 scalar JSON
 scalar Upload
 
+type Entity {
+  id: ID!
+  name: String!
+  type: String!
+  aspects: [Aspect]
+}
+
+input EntityInput {
+  name: String!
+  type: String!
+}
+
+type Aspect {
+  id: ID!
+  name: String!
+  type: String!
+  freeInvokes: Int!
+  usedInvokes: Int!
+}
+
+# ===========
+# EXAMPLES
+# ===========
+
 # It will increment!
 type Counter {
   # Number of increments
@@ -37,6 +61,7 @@ type Query {
   hello(name: String): String!
   # List of messages sent by users
   messages: [Message]
+  entities: [Entity]
   uploads: [File]
 
 }
@@ -44,17 +69,21 @@ type Query {
 type Mutation {
   myMutation: String!
   # Add a message and publish it on 'messages' subscription channel
+  createEntity (input: EntityInput!): Entity!
+  updateEntity (id: ID!, input: EntityInput!): Entity!
+
   addMessage (input: MessageInput!): Message!
   singleUpload (file: Upload!): File!
   multipleUpload (files: [Upload!]!): [File!]!
-
 }
 
 type Subscription {
   mySub: String!
+
+  entityCreated: Entity!
+
   # This will update every 2 seconds
   counter: Counter!
   # When a new message is added
   messageAdded: Message!
-
 }

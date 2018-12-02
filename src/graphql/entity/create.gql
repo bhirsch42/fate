@@ -1,0 +1,7 @@
+#import "./fragment.gql"
+
+mutation createEntity ($input: EntityInput!) {
+  createEntity (input: $input) {
+    ...Entity
+  }
+}
