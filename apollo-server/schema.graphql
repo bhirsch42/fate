@@ -7,11 +7,13 @@ type Entity {
   name: String!
   type: String!
   aspects: [Aspect]
+  archived: Boolean
 }
 
 input EntityInput {
-  name: String!
-  type: String!
+  name: String
+  type: String
+  archived: Boolean
 }
 
 type Aspect {
@@ -61,7 +63,7 @@ type Query {
   hello(name: String): String!
   # List of messages sent by users
   messages: [Message]
-  entities: [Entity]
+  entities(input: EntityInput): [Entity]
   uploads: [File]
 
 }
@@ -81,6 +83,8 @@ type Subscription {
   mySub: String!
 
   entityCreated: Entity!
+  entityUpdated: Entity!
+  entityCreatedOrUpdated: Entity!
 
   # This will update every 2 seconds
   counter: Counter!

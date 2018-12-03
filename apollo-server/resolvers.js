@@ -12,7 +12,7 @@ export default {
 
   Query: {
     hello: (root, { name }) => `Hello ${name || 'World'}!`,
-    entities: (root, args, { db }) => db.get('entities').value(),
+    entities: (_root, { input }, { db }) => db.get('entities').filter(input).value(),
     messages: (root, args, { db }) => db.get('messages').value(),
     uploads: (root, args, { db }) => db.get('uploads').value(),
   },
@@ -29,14 +29,13 @@ export default {
         id: shortid.generate(),
         name: input.name,
         type: input.type,
+        archived: false,
       }
 
-      db.get('entities')
-        .push(entity)
-        .last()
-        .write()
+      db.get('entities').push(entity).last().write()
 
-      pubsub.publish('entities', { entityCreated: entity })
+      // pubsub.publish('entities', { entityCreated: entity })
+      pubsub.publish('entities', { entityCreatedOrUpdated: entity })
 
       return entity
     },
@@ -44,6 +43,8 @@ export default {
     updateEntity(root, { id, input }, { pubsub, db }) {
       let entity = db.get('entities').find({ id });
       entity.assign(input).write();
+      // pubsub.publish('entities', { entityUpdated: entity.value() })
+      pubsub.publish('entities', { entityCreatedOrUpdated: entity.value() })
       return entity.value();
     },
 
@@ -71,6 +72,14 @@ export default {
 
   Subscription: {
     entityCreated: {
+      subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('entities'),
+    },
+
+    entityUpdated: {
+      subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('entities'),
+    },
+
+    entityCreatedOrUpdated: {
       subscribe: (parent, args, { pubsub }) => pubsub.asyncIterator('entities'),
     },
 

@@ -1,0 +1,7 @@
+#import "./fragment.gql"
+
+subscription entityUpdated {
+  entityUpdated {
+    ...Entity
+  }
+}

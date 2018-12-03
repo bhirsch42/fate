@@ -1,7 +1,7 @@
 #import "./fragment.gql"
 
-query entities {
-  entities {
+query entities($input: EntityInput) {
+  entities(input: $input) {
     ...Entity
   }
 }

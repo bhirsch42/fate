@@ -22,8 +22,14 @@
       </v-btn>
       <CreateEntity :entity="entity" @done="dialog = false" />
     </v-dialog>
-    <v-tooltip bottom>
-      <v-btn icon slot="activator">
+    <v-tooltip bottom v-if="entity.archived">
+      <v-btn icon slot="activator" @click="unarchiveEntity(entity)">
+        <font-awesome-icon icon="archive" />
+      </v-btn>
+      <span>Unarchive</span>
+    </v-tooltip>
+    <v-tooltip bottom v-else>
+      <v-btn icon slot="activator" @click="archiveEntity(entity)">
         <font-awesome-icon icon="archive" />
       </v-btn>
       <span>Archive</span>
@@ -50,6 +56,22 @@ export default {
       dialog: false,
     }
   },
+
+  methods: {
+    archiveEntity(entity) {
+      this.$apollo.mutate({
+        mutation: require('@/graphql/entity/update.gql'),
+        variables: { id: entity.id, input: { archived: true } },
+      });
+    },
+
+    unarchiveEntity(entity) {
+      this.$apollo.mutate({
+        mutation: require('@/graphql/entity/update.gql'),
+        variables: { id: entity.id, input: { archived: false } },
+      });
+    }
+  }
 }
 
 

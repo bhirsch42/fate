@@ -2,4 +2,5 @@ fragment Entity on Entity {
   id
   name
   type
+  archived
 }

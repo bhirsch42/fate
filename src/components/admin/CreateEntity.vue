@@ -62,10 +62,10 @@ export default {
 
       this.$apollo.mutate(entity.id ? {
         mutation: require('@/graphql/entity/update.gql'),
-        variables: { id: entity.id, input }
+        variables: { id: entity.id, input },
       } : {
         mutation: require('@/graphql/entity/create.gql'),
-        variables: { input }
+        variables: { input },
       }).then(data => {
         this.$emit('done', data);
         this.$emit('saved', data);
